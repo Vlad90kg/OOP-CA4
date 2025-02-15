@@ -80,7 +80,18 @@ public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
     }
 
     @Override
-    public void deleteExpense(int id) {
+    public void deleteExpense(int id) throws DaoException {
+        String sql = "DELETE FROM expense WHERE id = ?";
 
+        try (Connection conn = getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)){
+            preparedStatement.setInt(1, id);
+            int rowDeleted = preparedStatement.executeUpdate();
+            if (rowDeleted == 0) {
+                throw new DaoException("Error deleting expense, no rows affected");
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error deleting expenses: " + e.getMessage());
+        }
     }
 }
