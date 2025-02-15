@@ -8,6 +8,7 @@ public class Income {
     private double amount;
     private Date dateIncurred;
 
+    
     public Income(int incomeID, String title, double amount, Date dateIncurred) {
         this.incomeID = incomeID;
         this.title = title;
