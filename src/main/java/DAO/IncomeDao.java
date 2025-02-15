@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
 
-public class IncomeDao extends  MySQLDao implements IncomeDAOInterface {
+public class IncomeDao extends  MySQLDao implements DAOInterface<Income> {
     @Override
-    public List<Income> getIncomes() {
+    public List<Income> getList() throws DaoException {
         List<Income> incomes = new ArrayList<>();
         String query = "SELECT * FROM Income";
         try(Connection conn = getConnection();
@@ -34,13 +34,35 @@ public class IncomeDao extends  MySQLDao implements IncomeDAOInterface {
     }
 
     @Override
-    public void addIncome(String title, double amount, Date dateIncurred) throws DaoException {
+    public Income getByID(int id) throws DaoException {
+        String sql = "select * from Income where incomeID = ?";
+        Income income = null;
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet rs= preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    Date date = rs.getDate("dateIncurred");
+                    double amount = rs.getDouble("amount");
+                    String title = rs.getString("title");
+                    income = new Income(id,title,amount,date);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DaoException("Error fetching expenses: " + e.getMessage());
+        }
+        return income;
+    }
+
+    @Override
+    public void add(Income income) throws DaoException {
         String sql = "INSERT INTO Income (title,amount,dateIncurred) VALUES (?,?,?)";
         try (Connection conn = getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, title);
-            preparedStatement.setDouble(2, amount);
-            preparedStatement.setDate(3, dateIncurred);
+            preparedStatement.setString(1, income.getTitle());
+            preparedStatement.setDouble(2, income.getAmount());
+            preparedStatement.setDate(3, income.getDateIncurred());
             int rowInserted = preparedStatement.executeUpdate();
             if (rowInserted == 0) {
                 throw new DaoException("Error inserting expense, no rows affected");
@@ -51,7 +73,7 @@ public class IncomeDao extends  MySQLDao implements IncomeDAOInterface {
     }
 
     @Override
-    public void deleteIncome(int id) throws DaoException {
+    public void deleteByID(int id) throws DaoException {
         String sql = "DELETE FROM Income WHERE Income.incomeID = ?";
 
         try (Connection conn = getConnection();
@@ -64,5 +86,23 @@ public class IncomeDao extends  MySQLDao implements IncomeDAOInterface {
         } catch (SQLException e) {
             throw new DaoException("Error deleting expenses: " + e.getMessage());
         }
+    }
+
+    @Override
+    public double getTotal() throws DaoException {
+        String sql = "select SUM(amount) from Income";
+        double total = 0;
+
+        try(Connection conn = getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery()
+        ) {
+            if (rs.next()) {
+                total = rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error fetching total incomes: " + e.getMessage());
+        }
+        return total;
     }
 }

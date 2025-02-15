@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
 
-public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
+public class ExpenseDao extends MySQLDao implements DAOInterface<Expense> {
 
 
     @Override
-    public List<Expense> getExpenses() throws DaoException {
+    public List<Expense> getList() throws DaoException {
         String sql = "select * from expense";
         List<Expense> expenses = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
     }
 
     @Override
-    public Expense getExpense(int id) throws DaoException {
+    public Expense getByID(int id) throws DaoException {
         String sql = "select * from expense where id = ?";
         Expense expense = null;
         try (Connection conn = getConnection();
@@ -61,14 +61,14 @@ public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
     }
 
     @Override
-    public void addExpense(String title, String category, double amount, Date date) throws DaoException {
+    public void add(Expense expense) throws DaoException {
         String sql = "INSERT INTO expense (title,category,amount,dateIncurred) VALUES (?,?,?,?)";
         try (Connection conn = getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, title);
-            preparedStatement.setString(2, category);
-            preparedStatement.setDouble(3, amount);
-            preparedStatement.setDate(4, date);
+            preparedStatement.setString(1, expense.getTitle());
+            preparedStatement.setString(2, expense.getCategory());
+            preparedStatement.setDouble(3, expense.getAmount());
+            preparedStatement.setDate(4, expense.getDateIncurred());
             int rowInserted = preparedStatement.executeUpdate();
             if (rowInserted == 0) {
                 throw new DaoException("Error inserting expense, no rows affected");
@@ -80,7 +80,7 @@ public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
     }
 
     @Override
-    public void deleteExpense(int id) throws DaoException {
+    public void deleteByID(int id) throws DaoException {
         String sql = "DELETE FROM expense WHERE id = ?";
 
         try (Connection conn = getConnection();
@@ -93,5 +93,23 @@ public class ExpenseDao extends MySQLDao implements ExpenseDAOInterface {
         } catch (SQLException e) {
             throw new DaoException("Error deleting expenses: " + e.getMessage());
         }
+    }
+
+    @Override
+    public double getTotal() throws DaoException {
+        String sql = "select SUM(amount) from expense";
+        double total = 0;
+
+        try(Connection conn = getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        ResultSet rs = preparedStatement.executeQuery()
+        ) {
+            if (rs.next()) {
+                total = rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error fetching total expenses: " + e.getMessage());
+        }
+        return total;
     }
 }

@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExpenseDaoTest {
 
-    ExpenseDAOInterface expenseDAOInterface = null;
+    DAOInterface<Expense> DAOInterface = null;
     @BeforeEach
     void setUp() throws DaoException {
-        expenseDAOInterface = new ExpenseDao();
+        DAOInterface = new ExpenseDao();
     }
 
     @org.junit.jupiter.api.Test
@@ -30,9 +30,10 @@ class ExpenseDaoTest {
     void addExpense() throws DaoException {
         LocalDate localDate = LocalDate.of(2020, 1, 1);
         Date date = Date.valueOf(localDate);
-        expenseDAOInterface.addExpense("Cockpany", "baxpenses", 700.66, date);
-        Expense expense = expenseDAOInterface.getExpense(1);
-        assertNotNull(expense);
+        Expense expense = new Expense("Cockpany", "baxpenses", 700.66, date);
+        DAOInterface.add(expense);
+        Expense expense2 = DAOInterface.getByID(6);
+        assertEquals(expense.getTitle(), expense2.getTitle());
 
     }
 

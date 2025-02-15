@@ -1,15 +1,22 @@
 package Models;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Expense {
-    private int ExpenseID;
+    private int expenseID;
     private String title, category;
     private double amount;
     private Date dateIncurred;
 
     public Expense(int expenseID, String title, String category, double amount, Date dateIncurred) {
-        ExpenseID = expenseID;
+        this.expenseID = expenseID;
+        this.title = title;
+        this.category = category;
+        this.amount = amount;
+        this.dateIncurred = dateIncurred;
+    }
+
+    public Expense(String title, String category, double amount, Date dateIncurred) {
         this.title = title;
         this.category = category;
         this.amount = amount;
@@ -17,11 +24,11 @@ public class Expense {
     }
 
     public int getExpenseID() {
-        return ExpenseID;
+        return expenseID;
     }
 
     public void setExpenseID(int expenseID) {
-        ExpenseID = expenseID;
+        this.expenseID = expenseID;
     }
 
     public String getTitle() {
@@ -59,12 +66,11 @@ public class Expense {
 
     @Override
     public String toString() {
-        return "Expense{" +
-                "ExpenseID=" + ExpenseID +
-                ", title='" + title + '\'' +
-                ", category='" + category + '\'' +
-                ", amount=" + amount +
-                ", dateIncurred=" + dateIncurred +
-                '}';
+        return
+                expenseID +
+                        ", '" + title + '\'' +
+                        ", " + category + '\'' +
+                        ", " + amount +
+                        ", " + dateIncurred;
     }
 }
