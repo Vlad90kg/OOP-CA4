@@ -10,6 +10,4 @@ public interface DAOInterface<T>  {
     void add(T model) throws DaoException;
     void deleteByID(int id) throws DaoException;
     double getTotal() throws DaoException;
-
-    // void add(String title, String category, double amount, Date date)
 }
