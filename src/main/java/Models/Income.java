@@ -8,13 +8,20 @@ public class Income {
     private double amount;
     private Date dateIncurred;
 
-    
+
     public Income(int incomeID, String title, double amount, Date dateIncurred) {
         this.incomeID = incomeID;
         this.title = title;
         this.amount = amount;
         this.dateIncurred = dateIncurred;
     }
+
+    public Income(String title, double amount, Date dateIncurred) {
+        this.title = title;
+        this.amount = amount;
+        this.dateIncurred = dateIncurred;
+    }
+
 
     public int getIncomeID() {
         return incomeID;
@@ -46,5 +53,14 @@ public class Income {
 
     public void setDateIncurred(Date dateIncurred) {
         this.dateIncurred = dateIncurred;
+    }
+
+    @Override
+    public String toString() {
+        return
+                incomeID +
+                        ", '" + title + '\'' +
+                        ", " + amount +
+                        ", " + dateIncurred;
     }
 }
