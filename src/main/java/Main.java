@@ -1,9 +1,5 @@
-import DAO.DAOInterface;
-import DAO.ExpenseDao;
-import DAO.IncomeDao;
 import Exceptions.DaoException;
-import Models.Expense;
-import Models.Income;
+
 import utilities.ExpenseOptions;
 import utilities.IncomeOptions;
 import utilities.Other;
